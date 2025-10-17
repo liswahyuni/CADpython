@@ -1,0 +1,4 @@
+ezdxf
+svgwrite
+trimesh
+numpy-stl
