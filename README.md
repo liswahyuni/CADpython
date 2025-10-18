@@ -6,7 +6,7 @@ A CAD generation system that converts Indonesian text descriptions into professi
 
 ## Overview
 
-This system uses RAG to retrieve furniture dimensions from PDF documents. It translates Indonesian furniture terms to English, searches through a PDF knowledge base, and extracts relevant dimensions to generate accurate CAD files.
+This system uses RAG to retrieve furniture dimensions from PDF documents. It translates Indonesian furniture terms to English, searches through a PDF knowledge base, and extracts relevant dimensions to generate CAD files.
 
 ## Features
 
@@ -14,7 +14,7 @@ This system uses RAG to retrieve furniture dimensions from PDF documents. It tra
 - **PDF-based RAG**: Retrieves furniture standards from PDF documents
 - **2D CAD Output**: DXF and SVG formats with top and front views
 - **3D Model Generation**: STL and OBJ/MTL formats
-- **Circular Shape Support**: Accurate circular geometry for round tables
+- **Circular Shape Support**: Circular geometry for round tables
 - **2D-3D Consistency**: Matching proportions across all views
 - **3D GIF Preview**: Converted STL files to rotating GIF animations for GitHub preview (since GitHub cannot directly render 3D models in README)
 
@@ -143,7 +143,7 @@ Meja makan lingkaran diameter 120 cm dengan 4 kaki, tinggi 75 cm
 
 3D model files in `demo_output/`:
 - `round_dining_table.stl` - Circular cylinder tabletop with 4 legs (32 KB)
-- `round_dining_table.obj` - Accurate circular geometry (20 KB)
+- `round_dining_table.obj` - Circular geometry (20 KB)
 
 ### 4. Three-Seat Sofa (Sofa 3 Dudukan)
 
@@ -167,10 +167,10 @@ Sofa 3 dudukan dengan sandaran dan lengan, panjang 200 cm lebar 90 cm tinggi 85 
 ![Sofa 3D Animation](demo_output/gifs/three_seat_sofa.gif)
 
 3D model files in `demo_output/`:
-- `three_seat_sofa.stl` - Realistic rounded edges, 182 vertices (17 KB)
-- `three_seat_sofa.obj` - Clean geometry with subtle smoothing (11 KB)
+- `three_seat_sofa.stl` - Rounded edges, 182 vertices (17 KB)
+- `three_seat_sofa.obj` - Geometry with Laplacian smoothing (11 KB)
 
-*Note: The 3D model uses single subdivision and moderate Laplacian smoothing (3 iterations) to match the subtle rounded corners in 2D (rx=3, ry=3). Backrest is properly positioned directly on top of the seat base (not floating), creating realistic furniture geometry that matches 2D proportions exactly.*
+*Note: The 3D model uses single subdivision and Laplacian smoothing (3 iterations) to match the rounded corners in 2D (rx=3, ry=3). Backrest is positioned directly on top of the seat base, matching 2D proportions.*
 
 ### 5. Wardrobe (Lemari Pakaian 2 Pintu)
 
@@ -258,11 +258,16 @@ python generate_3d_gifs.py
 ```
 CADpython/
 ├── demo.py              # Main demo runner and pipeline orchestrator
+├── pdf_rag.py          # RAG processor with PDF knowledge base
 ├── cad_generator.py     # 2D CAD generation (DXF and SVG)
 ├── extruder_3d.py       # 3D model generation (STL and OBJ)
-├── text_parser.py       # Text parsing and dimension extraction
-├── pdf_rag.py          # RAG processor with PDF knowledge base
-└── pyproject.toml       # Project configuration and dependencies
+├── generate_3d_gifs.py  # 3D to GIF animation converter
+├── pyproject.toml       # Project configuration and dependencies
+├── demo_output/         # Generated CAD files
+│   ├── *.{dxf,svg}     # 2D CAD files
+│   ├── *.{stl,obj,mtl} # 3D model files
+│   └── gifs/           # 3D GIF animations
+└── rag_documents/       # PDF furniture standards database
 ```
 
 ### Component Responsibilities
@@ -270,10 +275,10 @@ CADpython/
 | Component | Purpose |
 |-----------|---------|
 | `demo.py` | Orchestrates the entire pipeline, runs demonstration examples |
-| `text_parser.py` | Parses Indonesian text, extracts dimensions and furniture features |
-| `pdf_rag.py` | RAG system for retrieving furniture standards from PDF documents |
+| `pdf_rag.py` | RAG system with text parsing, Indonesian-English translation, and dimension extraction |
 | `cad_generator.py` | Creates 2D views (top and front) in DXF and SVG formats |
 | `extruder_3d.py` | Generates 3D meshes in STL and OBJ/MTL formats |
+| `generate_3d_gifs.py` | Converts STL files to rotating GIF animations for preview |
 
 ## Supported Object Types
 
@@ -306,6 +311,26 @@ The system uses PDF documents as the knowledge base:
 
 **Location**: PDF knowledge base should be placed in the project directory. The system will automatically load and index them for RAG retrieval.
 
+### AI/ML Technology Stack
+
+**Sentence Transformer: `all-MiniLM-L6-v2`**
+- **Purpose**: Semantic embedding for PDF document retrieval in RAG pipeline
+- **Specs**: 384-dimensional embeddings, 256 token limit, CPU inference
+- **Implementation**: Cosine similarity scoring for relevant chunk retrieval
+
+**Parsing Architecture: Rule-Based (No LLM)**
+- **Dimension extraction**: Regex pattern matching for Indonesian/English measurements
+- **Feature detection**: Keyword-based parsing (`has_garage`, `doors`, `seats`, etc.)
+- **Why no LLM**: CAD requires deterministic precision and reproducible outputs
+- **Trade-off**: Limited to predefined patterns — cannot handle free-form natural language variations
+
+**When LLM Would Help:**
+- Handling ambiguous or conversational input: *"Saya mau meja yang agak besar"*
+- Understanding context: *"Kursi untuk ruang makan keluarga 6 orang"*
+- Extracting implicit requirements: *"Lemari untuk kamar anak kecil"*
+
+**Current Limitation:** Input must follow structured patterns like `"panjang X cm lebar Y cm tinggi Z cm"` or `"diameter X cm"`
+
 ### 2D-3D Consistency
 
 All models maintain strict consistency between 2D views and 3D models:
@@ -316,7 +341,7 @@ All models maintain strict consistency between 2D views and 3D models:
 
 ### Circular Shape Support
 
-Circular furniture is detected and rendered accurately:
+Circular furniture is detected and rendered:
 ```python
 # Detection keywords: lingkaran, bulat, round, circular
 # 2D Rendering: <circle> element in SVG
@@ -369,8 +394,8 @@ Automatically extracts features from text:
 **Features:**
 - Automatic dimension annotations
 - Labeled components (doors, windows, rooms)
-- Proportionally accurate representations
-- Rounded corners for comfortable furniture (sofas, cushions)
+- Proportional representations
+- Rounded corners for furniture (sofas, cushions) with rx=3, ry=3
 
 ### 3D Rendering Specifications
 
@@ -380,11 +405,11 @@ Automatically extracts features from text:
 - MTL: Material definition file for OBJ
 
 **Quality:**
-- Smooth surfaces with proper normals
+- Surfaces with normals
 - Subdivision and smoothing for rounded edges
 - Circular tables with cylinder primitives
 - Individual sofa cushions with gaps
-- Standard architectural dimensions for rooms
+- Architectural dimensions for rooms
 
 ## Programmatic Usage
 
@@ -406,19 +431,19 @@ print(files['obj'])  # OBJ file path
 
 ### Circular Table Leg Positioning
 - Legs placed at 70% of radius from center
-- Red circles in 2D view for better visibility
-- Distance to edge automatically calculated and labeled
+- Red circles in 2D view
+- Distance to edge calculated and labeled
 
 ### Multi-Seat Sofa Design
-- Individual cushions with 2cm gaps for realism
-- Rounded corners (rx=3) matching 2D and 3D
+- Individual cushions with 2cm gaps
+- Rounded corners (rx=3) in 2D and 3D
 - Proportions: 12% armrests, 20% backrest depth
-- Subdivision and Laplacian smoothing for soft edges
+- Subdivision and Laplacian smoothing (3 iterations)
 
 ### Architectural Standards
-- Room height: 3.0m (standard ceiling)
-- Door height: 2.0m (residential standard)
-- Clean wall representation above doors
+- Room height: 3.0m
+- Door height: 2.0m
+- Wall representation above doors
 
 ## References
 
