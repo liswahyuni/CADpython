@@ -321,15 +321,42 @@ The system uses PDF documents as the knowledge base:
 **Parsing Architecture: Rule-Based (No LLM)**
 - **Dimension extraction**: Regex pattern matching for Indonesian/English measurements
 - **Feature detection**: Keyword-based parsing (`has_garage`, `doors`, `seats`, etc.)
-- **Why no LLM**: CAD requires deterministic precision and reproducible outputs
-- **Trade-off**: Limited to predefined patterns — cannot handle free-form natural language variations
 
-**When LLM Would Help:**
-- Handling ambiguous or conversational input: *"Saya mau meja yang agak besar"*
-- Understanding context: *"Kursi untuk ruang makan keluarga 6 orang"*
-- Extracting implicit requirements: *"Lemari untuk kamar anak kecil"*
+**Why No LLM for Dimension Parsing?**
 
-**Current Limitation:** Input must follow structured patterns like `"panjang X cm lebar Y cm tinggi Z cm"` or `"diameter X cm"`
+This project **deliberately avoids LLM** for dimension extraction due to CAD-specific requirements:
+
+1. **Deterministic Requirement**: CAD dimensions must be **exact and reproducible**
+   - Regex: `"panjang 200 cm"` → **always** extracts `2.00m`
+   - LLM: `"sofa yang besar"` → could return `2.0m`, `2.2m`, or `2.5m` (non-deterministic)
+
+2. **Engineering Precision**: 1mm error can cause structural failures
+   - Manufacturing tolerance demands **zero ambiguity**
+   - LLM probabilistic outputs unacceptable for production CAD
+
+3. **Reproducibility**: Same input **must** generate identical output
+   - Critical for version control and collaborative design
+   - LLM temperature/sampling introduces variance
+
+**When LLM Would Be Beneficial:**
+
+Despite current limitations, LLM could enhance the system for:
+
+1. **Natural Language Understanding**
+   - Current: `"panjang 200 cm lebar 90 cm"` works
+   - Future with LLM: `"Saya mau meja yang agak besar untuk 6 orang"` → extract implicit dimensions
+
+2. **Contextual Reasoning**
+   - Current: Cannot infer from context
+   - Future with LLM: `"Kursi untuk ruang makan keluarga 6 orang"` → suggest dining chair dimensions (45cm seat height)
+
+3. **Implicit Requirements**
+   - Current: Explicit features only
+   - Future with LLM: `"Lemari untuk kamar anak kecil"` → infer appropriate height (<150cm)
+
+**Current Limitation:** Input must follow structured patterns: `"panjang X cm lebar Y cm tinggi Z cm"` or `"diameter X cm"`
+
+**Potential Hybrid Approach:** LLM for understanding → validate with standards → deterministic regex for final extraction
 
 ### 2D-3D Consistency
 
