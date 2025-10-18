@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink" baseProfile="tiny" height="447.5px" version="1.2" width="480.0px">
+  <defs/>
+  <rect fill="white" height="447.5" stroke="black" width="480.0" x="0" y="0"/>
+  <rect fill="lightblue" height="60.0" stroke="blue" stroke-width="2" width="60.0" x="80" y="140"/>
+  <circle cx="85" cy="145" fill="brown" r="3" stroke="black" stroke-width="1"/>
+  <circle cx="135.0" cy="145" fill="brown" r="3" stroke="black" stroke-width="1"/>
+  <circle cx="135.0" cy="195.0" fill="brown" r="3" stroke="black" stroke-width="1"/>
+  <circle cx="85" cy="195.0" fill="brown" r="3" stroke="black" stroke-width="1"/>
+  <text fill="black" font-size="10px" font-weight="bold" x="100.0" y="172.0">SEAT</text>
+  <rect fill="lightblue" height="4" stroke="blue" stroke-width="2" width="60.0" x="260.0" y="140"/>
+  <line stroke="brown" stroke-width="3" x1="265.0" x2="265.0" y1="207.5" y2="144"/>
+  <line stroke="brown" stroke-width="3" x1="315.0" x2="315.0" y1="207.5" y2="144"/>
+  <text fill="black" font-size="9px" font-weight="bold" x="280.0" y="135">SEAT</text>
+  <text fill="brown" font-size="8px" font-weight="bold" x="262.0" y="202.5">LEGS</text>
+  <text fill="black" font-size="16px" font-weight="bold" x="80" y="115">TOP VIEW</text>
+  <text fill="black" font-size="16px" font-weight="bold" x="260.0" y="115">FRONT VIEW</text>
+  <text fill="red" font-size="14px" font-weight="bold" x="80" y="257.5">Dimensions: 0.40m × 0.40m × 0.45m</text>
+  <line stroke="red" stroke-width="1.5" x1="80" x2="140.0" y1="215.0" y2="215.0"/>
+  <line stroke="red" stroke-width="1.5" x1="80" x2="80" y1="207.0" y2="223.0"/>
+  <line stroke="red" stroke-width="1.5" x1="140.0" x2="140.0" y1="207.0" y2="223.0"/>
+  <text fill="red" font-size="11px" x="95.0" y="233.0">0.40m</text>
+  <line stroke="red" stroke-width="1.5" x1="155.0" x2="155.0" y1="140" y2="200.0"/>
+  <line stroke="red" stroke-width="1.5" x1="147.0" x2="163.0" y1="140" y2="140"/>
+  <line stroke="red" stroke-width="1.5" x1="147.0" x2="163.0" y1="200.0" y2="200.0"/>
+  <text fill="red" font-size="11px" transform="rotate(-90,165.0,170.0)" x="165.0" y="175.0">0.40m</text>
+  <line stroke="red" stroke-width="1.5" x1="260.0" x2="320.0" y1="222.5" y2="222.5"/>
+  <line stroke="red" stroke-width="1.5" x1="260.0" x2="260.0" y1="214.5" y2="230.5"/>
+  <line stroke="red" stroke-width="1.5" x1="320.0" x2="320.0" y1="214.5" y2="230.5"/>
+  <text fill="red" font-size="11px" x="275.0" y="240.5">0.40m</text>
+  <line stroke="red" stroke-width="1.5" x1="335.0" x2="335.0" y1="140" y2="207.5"/>
+  <line stroke="red" stroke-width="1.5" x1="327.0" x2="343.0" y1="140" y2="140"/>
+  <line stroke="red" stroke-width="1.5" x1="327.0" x2="343.0" y1="207.5" y2="207.5"/>
+  <text fill="red" font-size="11px" transform="rotate(-90,345.0,173.75)" x="345.0" y="178.75">0.45m</text>
+</svg>

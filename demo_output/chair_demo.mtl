@@ -1,0 +1,8 @@
+# Material file for chair
+newmtl chair
+Ka 0.200 0.100 0.050
+Kd 0.600 0.400 0.200
+Ks 0.300 0.300 0.300
+Ns 10.0
+d 1.0
+illum 2

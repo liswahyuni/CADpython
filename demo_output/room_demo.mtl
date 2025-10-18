@@ -1,0 +1,8 @@
+# Material file for room
+newmtl room
+Ka 0.300 0.300 0.250
+Kd 0.900 0.900 0.800
+Ks 0.100 0.100 0.100
+Ns 10.0
+d 1.0
+illum 2

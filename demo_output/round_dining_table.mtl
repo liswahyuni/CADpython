@@ -1,0 +1,8 @@
+# Material file for table
+newmtl table
+Ka 0.250 0.200 0.100
+Kd 0.800 0.600 0.400
+Ks 0.300 0.300 0.300
+Ns 10.0
+d 1.0
+illum 2

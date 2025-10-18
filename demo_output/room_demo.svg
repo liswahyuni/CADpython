@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink" baseProfile="tiny" height="530.0px" version="1.2" width="600.0px">
+  <defs/>
+  <rect fill="white" height="530.0" stroke="black" width="600.0" x="0" y="0"/>
+  <rect fill="lightyellow" height="150.0" stroke="black" stroke-width="3" width="120.0" x="80" y="140"/>
+  <line stroke="white" stroke-width="6" x1="80" x2="80" y1="200.0" y2="230.0"/>
+  <line stroke="red" stroke-dasharray="3,3" stroke-width="2" x1="80" x2="80" y1="200.0" y2="230.0"/>
+  <path d="M 80 200.0 A 30 30 0 0 1 110 230.0" fill="none" stroke="red" stroke-dasharray="2,2" stroke-width="1"/>
+  <text fill="red" font-size="10px" font-weight="bold" x="40" y="215.0">PINTU</text>
+  <line stroke="white" stroke-width="6" x1="120.0" x2="160.0" y1="140" y2="140"/>
+  <line stroke="blue" stroke-width="3" x1="120.0" x2="160.0" y1="140" y2="140"/>
+  <rect fill="lightblue" height="6" stroke="blue" stroke-width="1" width="40" x="120.0" y="137"/>
+  <text fill="blue" font-size="10px" font-weight="bold" x="125.0" y="130">JENDELA</text>
+  <rect fill="lightyellow" height="90.0" stroke="black" stroke-width="3" width="120.0" x="320.0" y="140"/>
+  <rect fill="lightblue" height="30" stroke="blue" stroke-width="2" width="40" x="360.0" y="170.0"/>
+  <line stroke="blue" stroke-width="1" x1="380.0" x2="380.0" y1="170.0" y2="200.0"/>
+  <line stroke="blue" stroke-width="1" x1="360.0" x2="400.0" y1="185.0" y2="185.0"/>
+  <text fill="blue" font-size="8px" font-weight="bold" x="365.0" y="165.0">JENDELA</text>
+  <text fill="gray" font-size="7px" font-style="italic" x="325.0" y="225.0">NORTH WALL VIEW</text>
+  <text fill="black" font-size="16px" font-weight="bold" x="80" y="115">TOP VIEW</text>
+  <text fill="black" font-size="16px" font-weight="bold" x="320.0" y="115">FRONT VIEW</text>
+  <text fill="red" font-size="14px" font-weight="bold" x="80" y="340.0">Dimensions: 4.00m × 5.00m × 3.00m</text>
+  <line stroke="red" stroke-width="1.5" x1="80" x2="200.0" y1="305.0" y2="305.0"/>
+  <line stroke="red" stroke-width="1.5" x1="80" x2="80" y1="297.0" y2="313.0"/>
+  <line stroke="red" stroke-width="1.5" x1="200.0" x2="200.0" y1="297.0" y2="313.0"/>
+  <text fill="red" font-size="11px" x="125.0" y="323.0">4.00m</text>
+  <line stroke="red" stroke-width="1.5" x1="215.0" x2="215.0" y1="140" y2="290.0"/>
+  <line stroke="red" stroke-width="1.5" x1="207.0" x2="223.0" y1="140" y2="140"/>
+  <line stroke="red" stroke-width="1.5" x1="207.0" x2="223.0" y1="290.0" y2="290.0"/>
+  <text fill="red" font-size="11px" transform="rotate(-90,225.0,215.0)" x="225.0" y="220.0">5.00m</text>
+  <line stroke="red" stroke-width="1.5" x1="320.0" x2="440.0" y1="245.0" y2="245.0"/>
+  <line stroke="red" stroke-width="1.5" x1="320.0" x2="320.0" y1="237.0" y2="253.0"/>
+  <line stroke="red" stroke-width="1.5" x1="440.0" x2="440.0" y1="237.0" y2="253.0"/>
+  <text fill="red" font-size="11px" x="365.0" y="263.0">4.00m</text>
+  <line stroke="red" stroke-width="1.5" x1="455.0" x2="455.0" y1="140" y2="230.0"/>
+  <line stroke="red" stroke-width="1.5" x1="447.0" x2="463.0" y1="140" y2="140"/>
+  <line stroke="red" stroke-width="1.5" x1="447.0" x2="463.0" y1="230.0" y2="230.0"/>
+  <text fill="red" font-size="11px" transform="rotate(-90,465.0,185.0)" x="465.0" y="190.0">3.00m</text>
+</svg>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink" baseProfile="tiny" height="515.0px" version="1.2" width="960.0px">
+  <defs/>
+  <rect fill="white" height="515.0" stroke="black" width="960.0" x="0" y="0"/>
+  <rect fill="darkgray" height="27.0" rx="3" ry="3" stroke="black" stroke-width="2" width="300.0" x="80" y="140"/>
+  <rect fill="gray" height="108.0" rx="3" ry="3" stroke="black" stroke-width="2" width="36.0" x="80" y="167.0"/>
+  <rect fill="lightcoral" height="102.0" rx="3" ry="3" stroke="darkred" stroke-width="1" width="72.0" x="118.0" y="170.0"/>
+  <rect fill="lightcoral" height="102.0" rx="3" ry="3" stroke="darkred" stroke-width="1" width="72.0" x="194.0" y="170.0"/>
+  <rect fill="lightcoral" height="102.0" rx="3" ry="3" stroke="darkred" stroke-width="1" width="72.0" x="270.0" y="170.0"/>
+  <rect fill="gray" height="108.0" rx="3" ry="3" stroke="black" stroke-width="2" width="36.0" x="344.0" y="167.0"/>
+  <text fill="black" font-size="10px" font-weight="bold" x="218.0" y="207.5">SOFA</text>
+  <rect fill="darkgray" height="70.125" rx="3" ry="3" stroke="black" stroke-width="2" width="228.0" x="536.0" y="140"/>
+  <rect fill="lightcoral" height="57.375" rx="3" ry="3" stroke="darkred" stroke-width="2" width="300.0" x="500.0" y="210.125"/>
+  <rect fill="gray" height="89.25" rx="3" ry="3" stroke="black" stroke-width="2" width="36.0" x="500.0" y="178.25"/>
+  <rect fill="gray" height="89.25" rx="3" ry="3" stroke="black" stroke-width="2" width="36.0" x="764.0" y="178.25"/>
+  <text fill="white" font-size="8px" font-weight="bold" x="638.0" y="180.0625">BACK</text>
+  <text fill="black" font-size="8px" font-weight="bold" x="638.0" y="243.8125">SEAT</text>
+  <text fill="black" font-size="16px" font-weight="bold" x="80" y="115">TOP VIEW</text>
+  <text fill="black" font-size="16px" font-weight="bold" x="500.0" y="115">FRONT VIEW</text>
+  <text fill="red" font-size="14px" font-weight="bold" x="80" y="325.0">Dimensions: 2.00m × 0.90m × 0.85m</text>
+  <line stroke="red" stroke-width="1.5" x1="80" x2="380.0" y1="290.0" y2="290.0"/>
+  <line stroke="red" stroke-width="1.5" x1="80" x2="80" y1="282.0" y2="298.0"/>
+  <line stroke="red" stroke-width="1.5" x1="380.0" x2="380.0" y1="282.0" y2="298.0"/>
+  <text fill="red" font-size="11px" x="215.0" y="308.0">2.00m</text>
+  <line stroke="red" stroke-width="1.5" x1="395.0" x2="395.0" y1="140" y2="275.0"/>
+  <line stroke="red" stroke-width="1.5" x1="387.0" x2="403.0" y1="140" y2="140"/>
+  <line stroke="red" stroke-width="1.5" x1="387.0" x2="403.0" y1="275.0" y2="275.0"/>
+  <text fill="red" font-size="11px" transform="rotate(-90,405.0,207.5)" x="405.0" y="212.5">0.90m</text>
+  <line stroke="red" stroke-width="1.5" x1="500.0" x2="800.0" y1="282.5" y2="282.5"/>
+  <line stroke="red" stroke-width="1.5" x1="500.0" x2="500.0" y1="274.5" y2="290.5"/>
+  <line stroke="red" stroke-width="1.5" x1="800.0" x2="800.0" y1="274.5" y2="290.5"/>
+  <text fill="red" font-size="11px" x="635.0" y="300.5">2.00m</text>
+  <line stroke="red" stroke-width="1.5" x1="815.0" x2="815.0" y1="140" y2="267.5"/>
+  <line stroke="red" stroke-width="1.5" x1="807.0" x2="823.0" y1="140" y2="140"/>
+  <line stroke="red" stroke-width="1.5" x1="807.0" x2="823.0" y1="267.5" y2="267.5"/>
+  <text fill="red" font-size="11px" transform="rotate(-90,825.0,203.75)" x="825.0" y="208.75">0.85m</text>
+</svg>

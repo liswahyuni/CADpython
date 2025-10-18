@@ -1,238 +1,428 @@
-# Text to CAD Converter
+# CAD Generator with RAG
 
-A Python program that converts simple text descriptions into 2D CAD files (DXF, SVG) and 3D models (STL, OBJ).
+A CAD generation system that converts Indonesian text descriptions into professional CAD files using Retrieval-Augmented Generation (RAG) from PDF furniture standards.
 
-## Key Features
+**Author**: Lis Wahyuni
 
-- **Natural Text Input**: Simple descriptions in Indonesian/English
-- **2D Output**: DXF (AutoCAD) and SVG files with top and front views
-- **Readable SVG**: Optimized colors (blue lines, cyan dimensions, white text)
-- **3D Output**: STL and OBJ models with realistic extrusion
-- **Realistic Rooms**: Doors and windows with actual openings in 3D models
-- **Auto Conversion**: Automatic meter to centimeter conversion
-- **Multi-Object Support**: Chairs, tables, rooms, cabinets, shelves
+## Overview
+
+This system uses RAG to retrieve furniture dimensions from PDF documents. It translates Indonesian furniture terms to English, searches through a PDF knowledge base, and extracts relevant dimensions to generate accurate CAD files.
+
+## Features
+
+- **Indonesian Language Support**: Natural language input in Indonesian
+- **PDF-based RAG**: Retrieves furniture standards from PDF documents
+- **2D CAD Output**: DXF and SVG formats with top and front views
+- **3D Model Generation**: STL and OBJ/MTL formats
+- **Circular Shape Support**: Accurate circular geometry for round tables
+- **2D-3D Consistency**: Matching proportions across all views
+- **3D GIF Preview**: Converted STL files to rotating GIF animations for GitHub preview (since GitHub cannot directly render 3D models in README)
+
+## Installation
+
+### Using uv (Recommended)
+
+```bash
+# Install uv package manager
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Clone repository
+git clone https://github.com/liswahyuni/CADpython.git
+cd CADpython
+
+# Install dependencies
+uv sync
+```
+
+### Using pip
+
+```bash
+# Clone repository
+git clone https://github.com/liswahyuni/CADpython.git
+cd CADpython
+
+# Create virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Install dependencies
+pip install -e .
+```
 
 ## Quick Start
 
-### 1. Install uv (Package Manager)
-
 ```bash
-# Linux/Mac
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Windows
-powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+# Run demo examples
+python demo.py
 ```
 
-### 2. Install Dependencies
+The system will generate 30 files (6 objects × 5 formats) in the `demo_output/` directory.
 
-```bash
-cd ggs_python
-uv pip install -r requirements.txt
+Output formats: DXF, SVG, STL, OBJ, MTL
+
+## Demo Examples
+
+### 1. Chair (Kursi 4 Kaki)
+
+**Input Text:**
+```
+Kursi dengan 4 kaki, dudukan persegi 40x40 cm, tinggi 45 cm
 ```
 
-### 3. Run Examples
+**Generated Output:**
+- Dimensions: 0.40m × 0.40m × 0.45m
+- 2D Views: Square seat with 4 legs at corners
+- 3D Model: Seat platform with 4 cylindrical legs (no backrest)
+- Files: `chair_demo.{dxf,svg,stl,obj,mtl}`
 
-```bash
-uv run python examples.py
+**2D Output (SVG):**
+
+![Chair 2D](demo_output/chair_demo.svg)
+
+**3D Output:**
+
+![Chair 3D Animation](demo_output/gifs/chair_demo.gif)
+
+The 3D model files are available in `demo_output/`:
+- `chair_demo.stl` - Binary STL for 3D printing (27 KB)
+- `chair_demo.obj` - Text-based 3D model (17 KB, 819 lines)
+
+To view 3D models:
+- Use online viewers: [3D Viewer Online](https://3dviewer.net/) or [ViewSTL](https://www.viewstl.com/)
+- Desktop software: Blender, MeshLab, FreeCAD
+- 3D printing slicers: Cura, PrusaSlicer
+
+### 2. Room (Ruangan dengan Pintu dan Jendela)
+
+**Input Text:**
+```
+Ruangan ukuran 4x5 meter, dengan 1 pintu di sisi barat dan 1 jendela di sisi utara
 ```
 
-Output will be saved in `examples_output/` folder with 3 sample objects × 4 formats (12 files total).
+**Generated Output:**
+- Dimensions: 4.0m × 5.0m × 3.0m (height)
+- 2D Views: 
+  - Top: Door on west wall, window on north wall
+  - Front: North wall view showing centered window
+- 3D Model: Complete room with walls, door (2.0m height), and window
+- Files: `room_demo.{dxf,svg,stl,obj,mtl}`
 
-## Usage
+**2D Output (SVG):**
 
-### Command Line
+![Room 2D](demo_output/room_demo.svg)
 
-```bash
-# Basic usage (2D only)
-uv run python main.py "Kursi makan dengan 4 kaki, dudukan 45x45 cm, tinggi 95 cm"
+**3D Output:**
 
-# Generate with 3D models
-uv run python main.py "Meja kerja 140x70 cm, tinggi 75 cm" --3d
+![Room 3D Animation](demo_output/gifs/room_demo.gif)
 
-# Room with door and window
-uv run python main.py "Ruangan 4x5 meter dengan pintu di barat dan jendela di utara" --3d -o my_room -n bedroom
+3D model files in `demo_output/`:
+- `room_demo.stl` - Complete room with walls, door (2.0m height), window (11 KB)
+- `room_demo.obj` - Text format with materials (7.7 KB)
 
-# Custom output
-uv run python main.py "Lemari 100x50x200 cm" -o furniture -n wardrobe --3d
+### 3. Round Dining Table (Meja Makan Bundar)
+
+**Input Text:**
+```
+Meja makan lingkaran diameter 120 cm dengan 4 kaki, tinggi 75 cm
 ```
 
-### Options
+**Generated Output:**
+- Dimensions: Ø 1.20m × 0.75m (height)
+- 2D Views: Circle with 4 legs positioned at 90° intervals
+- Leg Distance Label: "Leg to edge distance: 18 cm"
+- 3D Model: Circular cylinder tabletop with 4 cylindrical legs
+- Files: `round_dining_table.{dxf,svg,stl,obj,mtl}`
 
-| Option | Short | Description | Default |
-|--------|-------|-------------|---------|
-| `--output` | `-o` | Output directory | `output` |
-| `--name` | `-n` | File prefix | `design` |
-| `--3d` | - | Generate 3D models | `False` |
+**2D Output (SVG):**
 
-### Python API
+![Round Table 2D](demo_output/round_dining_table.svg)
+
+**3D Output:**
+
+![Round Table 3D Animation](demo_output/gifs/round_dining_table.gif)
+
+3D model files in `demo_output/`:
+- `round_dining_table.stl` - Circular cylinder tabletop with 4 legs (32 KB)
+- `round_dining_table.obj` - Accurate circular geometry (20 KB)
+
+### 4. Three-Seat Sofa (Sofa 3 Dudukan)
+
+**Input Text:**
+```
+Sofa 3 dudukan dengan sandaran dan lengan, panjang 200 cm lebar 90 cm tinggi 85 cm
+```
+
+**Generated Output:**
+- Dimensions: 2.00m × 0.90m × 0.85m
+- 2D Views: Top and front showing armrests (12%), backrest (20%), and 3 seats with rounded corners
+- 3D Model: Base + 3 separate seat cushions (with gaps) + backrest + armrests, all with smooth rounded edges
+- Files: `three_seat_sofa.{dxf,svg,stl,obj,mtl}`
+
+**2D Output (SVG):**
+
+![Sofa 2D](demo_output/three_seat_sofa.svg)
+
+**3D Output:**
+
+![Sofa 3D Animation](demo_output/gifs/three_seat_sofa.gif)
+
+3D model files in `demo_output/`:
+- `three_seat_sofa.stl` - Realistic rounded edges, 182 vertices (17 KB)
+- `three_seat_sofa.obj` - Clean geometry with subtle smoothing (11 KB)
+
+*Note: The 3D model uses single subdivision and moderate Laplacian smoothing (3 iterations) to match the subtle rounded corners in 2D (rx=3, ry=3). Backrest is properly positioned directly on top of the seat base (not floating), creating realistic furniture geometry that matches 2D proportions exactly.*
+
+### 5. Wardrobe (Lemari Pakaian 2 Pintu)
+
+**Input Text:**
+```
+Lemari pakaian 2 pintu, ukuran 120x60 cm, tinggi 200 cm
+```
+
+**Generated Output:**
+- Dimensions: 1.20m × 0.60m × 2.00m
+- 2D Views: 
+  - Top: Rectangular outline with 4 legs at corners
+  - Front: 2 doors with gold handles pointing toward center
+- 3D Model: Cabinet structure with walls, 2 doors, handles, and support legs
+- Files: `wardrobe.{dxf,svg,stl,obj,mtl}`
+
+**2D Output (SVG):**
+
+![Wardrobe 2D](demo_output/wardrobe.svg)
+
+**3D Output:**
+
+![Wardrobe 3D Animation](demo_output/gifs/wardrobe.gif)
+
+3D model files in `demo_output/`:
+- `wardrobe.stl` - Cabinet with doors, handles, and legs (12 KB)
+- `wardrobe.obj` - Detailed door and handle structures (8.5 KB)
+
+### 6. Modern House (Rumah Modern dengan Garasi)
+
+**Input Text:**
+```
+Rumah modern 10x12 meter dengan garasi, 2 kamar tidur, tinggi 3.5 meter
+```
+
+**Generated Output:**
+- Dimensions: 10.0m × 12.0m × 3.5m
+- 2D Views: 
+  - Top: Main house (75%) + garage (25%), 2 bedrooms + living area, 4 windows on side walls
+  - Front: South wall with centered entrance door, garage on right side, flat modern roof
+- 3D Model: Complete house structure with garage, flat roof, and main entrance
+- Files: `modern_house.{dxf,svg,stl,obj,mtl}`
+
+**2D Output (SVG):**
+
+![Modern House 2D](demo_output/modern_house.svg)
+
+**3D Output:**
+
+![Modern House 3D Animation](demo_output/gifs/modern_house.gif)
+
+3D model files in `demo_output/`:
+- `modern_house.stl` - Complete house with garage and flat roof (11 KB)
+- `modern_house.obj` - Full architectural structure (7.7 KB)
+
+## Output Structure
+
+```
+demo_output/
+├── chair_demo.dxf
+├── chair_demo.svg
+├── chair_demo.stl
+├── chair_demo.obj
+├── chair_demo.mtl
+├── room_demo.{dxf,svg,stl,obj,mtl}
+├── round_dining_table.{dxf,svg,stl,obj,mtl}
+├── three_seat_sofa.{dxf,svg,stl,obj,mtl}
+├── wardrobe.{dxf,svg,stl,obj,mtl}
+└── modern_house.{dxf,svg,stl,obj,mtl}
+```
+
+## Viewing 3D Models
+
+Since GitHub cannot directly render 3D models in README, I've converted all STL files to rotating GIF animations for easy preview. The original STL and OBJ files are available in the `demo_output/` directory.
+
+To generate GIF animations:
+```bash
+python generate_3d_gifs.py
+```
+
+## System Architecture
+
+### Components
+
+```
+CADpython/
+├── demo.py              # Main demo runner and pipeline orchestrator
+├── cad_generator.py     # 2D CAD generation (DXF and SVG)
+├── extruder_3d.py       # 3D model generation (STL and OBJ)
+├── text_parser.py       # Text parsing and dimension extraction
+├── pdf_rag.py          # RAG processor with PDF knowledge base
+└── pyproject.toml       # Project configuration and dependencies
+```
+
+### Component Responsibilities
+
+| Component | Purpose |
+|-----------|---------|
+| `demo.py` | Orchestrates the entire pipeline, runs demonstration examples |
+| `text_parser.py` | Parses Indonesian text, extracts dimensions and furniture features |
+| `pdf_rag.py` | RAG system for retrieving furniture standards from PDF documents |
+| `cad_generator.py` | Creates 2D views (top and front) in DXF and SVG formats |
+| `extruder_3d.py` | Generates 3D meshes in STL and OBJ/MTL formats |
+
+## Supported Object Types
+
+| Type | Indonesian Term | Detected Features | 2D Support | 3D Support |
+|------|----------------|-------------------|------------|------------|
+| Chair | Kursi | Legs, seat shape | Yes | Yes |
+| Table | Meja | Legs, circular/rectangular | Yes | Yes |
+| Sofa | Sofa | Seats, armrests, backrest | Yes | Yes |
+| Cabinet | Lemari | Doors, handles | Yes | Yes |
+| Room | Ruangan | Doors, windows | Yes | Yes |
+| House | Rumah | Garage, bedrooms, roof style | Yes | Yes |
+
+## Key Features
+
+### RAG (Retrieval-Augmented Generation)
+
+The system uses PDF documents as the knowledge base:
+- PDF files contain furniture dimension standards and architectural references
+- **Translation**: Indonesian furniture terms (e.g., "kursi", "meja") are automatically translated to English
+- **Retrieval**: Translated terms are used to search through PDF knowledge base using semantic similarity
+- **Enhancement**: Retrieved standards are used to validate and enhance user-provided dimensions
+- **Example**: When you input "meja makan", the system translates to "dining table", retrieves standard dimensions (75cm height, 150-180cm length), and uses these to validate your specifications
+
+**How RAG Helps:**
+1. **Input**: "Kursi dengan 4 kaki" (chair with 4 legs)
+2. **Translation**: "kursi" → "chair"
+3. **PDF Search**: Finds furniture standards with "chair" dimensions
+4. **Enhancement**: Validates that 45cm seat height is standard (retrieved from PDF)
+5. **Output**: Generates CAD with validated dimensions
+
+**Location**: PDF knowledge base should be placed in the project directory. The system will automatically load and index them for RAG retrieval.
+
+### 2D-3D Consistency
+
+All models maintain strict consistency between 2D views and 3D models:
+- **Round Table**: Rendered as circle in 2D SVG and cylinder in 3D mesh
+- **Sofa**: Proportions (12% armrest, 20% backrest) consistent across all views
+- **Room**: Door and window positions match between top view and front view
+- **House**: Garage and window placements are consistent across perspectives
+
+### Circular Shape Support
+
+Circular furniture is detected and rendered accurately:
+```python
+# Detection keywords: lingkaran, bulat, round, circular
+# 2D Rendering: <circle> element in SVG
+# 3D Rendering: Cylinder primitive in mesh
+# Leg Positioning: Calculated at radius × 0.7 from center
+```
+
+## Technical Specifications
+
+### Dimension Parsing
+
+The system supports multiple dimension input formats:
 
 ```python
-from main import TextToCAD
-
-converter = TextToCAD()
-converter.process_description(
-    "Kursi dengan 4 kaki, dudukan 40x40 cm, tinggi 45 cm",
-    output_dir="output",
-    generate_3d=True,
-    filename_prefix="office_chair"
-)
+"40x40 cm"                          # Simple dimensions
+"panjang 200 cm lebar 90 cm"        # Named dimensions (length, width)
+"diameter 120 cm"                   # Circular diameter
+"ukuran 4x5 meter tinggi 3 meter"   # Room-scale with height
 ```
 
-## Input Format
+### Feature Detection
 
-### Supported Objects
+Automatically extracts features from text:
 
-| Object | Keywords | Example |
-|-------|----------|--------|
-| Chair | `kursi`, `chair` | "Kursi makan dengan 4 kaki" |
-| Table | `meja`, `table` | "Meja kerja 140x70 cm" |
-| Room | `ruangan`, `room`, `kamar` | "Ruangan 4x5 meter" |
-| Cabinet | `lemari`, `cabinet` | "Lemari 100x50x200 cm" |
-| Shelf | `rak`, `shelf` | "Rak buku 80x30x180 cm" |
-
-### Dimension Formats
-
-```
-✓ "40x40 cm"
-✓ "4x5 meter"  
-✓ "120x80x75 cm"
-✓ "ukuran 4x5 meter, tinggi 3 meter"
-✓ "lebar 80 cm, panjang 120 cm, tinggi 75 cm"
+```python
+"4 kaki"         → legs: 4
+"3 dudukan"      → seats: 3
+"lingkaran"      → seat_shape: 'circular'
+"2 pintu"        → doors: 2
+"modern"         → style: 'modern'
+"dengan garasi"  → has_garage: True
+"dengan lengan"  → has_armrest: True
 ```
 
-### Object Features
+### 2D Rendering Specifications
 
-| Feature | Format | Example |
-|-------|--------|--------|
-| Legs | `{number} kaki` | "4 kaki", "6 kaki" |
-| Door | `pintu di {position}` | "1 pintu di sisi barat" |
-| Window | `jendela di {position}` | "2 jendela di utara" |
-| Drawer | `{number} laci` | "3 laci" |
+**SVG Scale Factors:**
+- Furniture: 100
+- Rooms: 20
+- Houses: 10
 
-### Positions (For Doors/Windows)
+**Color Scheme:**
+- Chairs/Sofas: Blue
+- Tables: Green (with red legs for circular tables)
+- Rooms: Yellow
+- Houses: Coral
+- Cabinets: Burlywood
+- Handles: Gold
 
-```
-Indonesian: utara, selatan, timur, barat
-English: north, south, east, west
-```
+**Features:**
+- Automatic dimension annotations
+- Labeled components (doors, windows, rooms)
+- Proportionally accurate representations
+- Rounded corners for comfortable furniture (sofas, cushions)
 
-## Output Examples
+### 3D Rendering Specifications
 
-### 1. Dining Chair
-```bash
-uv run python examples.py
-```
+**Output Formats:**
+- STL: Binary format for 3D printing
+- OBJ: Text-based 3D model format
+- MTL: Material definition file for OBJ
 
-**Input**: `"Kursi makan dengan 4 kaki, dudukan 42x42 cm, tinggi 90 cm"`
+**Quality:**
+- Smooth surfaces with proper normals
+- Subdivision and smoothing for rounded edges
+- Circular tables with cylinder primitives
+- Individual sofa cushions with gaps
+- Standard architectural dimensions for rooms
 
-**Output Files**:
-- `kursi_makan.dxf` - AutoCAD file
-- `kursi_makan.svg` - SVG with readable colors
-- `kursi_makan.stl` - 3D model for printing
-- `kursi_makan.obj` - 3D model for rendering
+## Programmatic Usage
 
-**Features**:
-- Top view: 42×42cm seat with 4 legs at corners
-- Front view: Chair profile with backrest
-- 3D model: Complete chair with seat, backrest, 4 cylindrical legs
+```python
+from demo import CADDemo
 
-### 2. Work Desk
-**Input**: `"Meja kerja ukuran 140x70 cm, tinggi 75 cm"`
+demo = CADDemo()
+parsed = demo.parse_description("Meja kerja 150x80 cm dengan 4 laci, tinggi 75 cm")
+files = demo.generate_cad(parsed, "custom_desk")
 
-**Features**:
-- Top view: 140×70cm table top with 4 legs
-- 3D model: Table with top and 4 cylindrical legs
-
-### 3. Room with Openings
-**Input**: `"Ruangan 4x5 meter, tinggi 3 meter, dengan 1 pintu di barat dan 1 jendela di utara"`
-
-**Features**:
-- Top view: Room layout with door & window symbols
-- 3D model: **4 walls with REAL OPENINGS**
-  - Door: 90cm width, 85% room height
-  - Window: 120cm width, 40% room height
-  - Segmented walls to create realistic gaps
-
-## Project Structure
-
-```
-ggs_python/
-├── main.py              # CLI entry point
-├── text_parser.py       # Parse text description → structured data
-├── cad_generator.py     # Generate DXF/SVG (2D)
-├── extruder_3d.py       # Generate STL/OBJ (3D)
-├── examples.py          # 3 demonstration examples
-├── README.md            # Documentation
-├── requirements.txt     # Dependencies
-├── .venv/               # Virtual environment (auto-created)
-├── examples_output/     # Output from examples.py
-└── output/              # Default output from main.py
+# Access generated files
+print(files['dxf'])  # DXF file path
+print(files['svg'])  # SVG file path
+print(files['stl'])  # STL file path
+print(files['obj'])  # OBJ file path
 ```
 
-## SVG Color Scheme
+## Key Technical Details
 
-| Element | Color | Hex Code | Description |
-|---------|-------|----------|------------|
-| Object Lines | Blue | `#4A90E2` | Main design lines |
-| Title Text | White | `white` | "TOP VIEW", "FRONT VIEW" |
-| Dimensions | Cyan | `#00D9FF` | Dimension lines & text |
+### Circular Table Leg Positioning
+- Legs placed at 70% of radius from center
+- Red circles in 2D view for better visibility
+- Distance to edge automatically calculated and labeled
 
-## Dependencies
+### Multi-Seat Sofa Design
+- Individual cushions with 2cm gaps for realism
+- Rounded corners (rx=3) matching 2D and 3D
+- Proportions: 12% armrests, 20% backrest depth
+- Subdivision and Laplacian smoothing for soft edges
 
-```txt
-ezdxf      # DXF file generation
-svgwrite   # SVG file generation
-trimesh    # 3D mesh processing
-numpy-stl  # STL file generation
-```
+### Architectural Standards
+- Room height: 3.0m (standard ceiling)
+- Door height: 2.0m (residential standard)
+- Clean wall representation above doors
 
-Install all with:
-```bash
-uv pip install -r requirements.txt
-```
+## References
 
-## Troubleshooting
-
-### Error: "command not found: uv"
-```bash
-# Install uv first
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
-
-### Error: "No module named 'ezdxf'"
-```bash
-# Install dependencies
-uv pip install -r requirements.txt
-```
-
-### Output Files Not Generated
-```bash
-# Check if examples.py runs
-uv run python examples.py
-
-# Check output folder
-ls -la examples_output/
-```
-
-### 3D Model Looks Strange
-- Rooms: Use viewers that support transparency (e.g., MeshLab, Blender)
-- Ensure input dimensions are reasonable
-- Try running examples.py to see reference outputs
-
-## Limitations
-
-1. Simple text parser (does not support very complex descriptions)
-2. Basic 3D models (no textures/materials)
-3. Object features limited to predefined ones
-4. No support for curved surfaces for all objects
-
-## Future Development
-
-- [ ] NLP parser for more natural descriptions
-- [ ] Support for more furniture types
-- [ ] Material and texture information
-- [ ] Web-based GUI
-- [ ] Export to other formats (STEP, IGES)
-- [ ] Automatic geometry validation
-- [ ] Real-time preview
+- [ezdxf Documentation](https://ezdxf.readthedocs.io/) - DXF file generation
+- [svgwrite Documentation](https://svgwrite.readthedocs.io/) - SVG file generation
+- [trimesh Documentation](https://trimsh.org/) - 3D mesh processing
+- [Sentence Transformers](https://www.sbert.net/) - Text embedding for RAG

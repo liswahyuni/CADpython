@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink" baseProfile="tiny" height="680.0px" version="1.2" width="720.0px">
+  <defs/>
+  <rect fill="white" height="680.0" stroke="black" width="720.0" x="0" y="0"/>
+  <rect fill="burlywood" height="90.0" stroke="saddlebrown" stroke-width="2" width="180.0" x="80" y="140"/>
+  <line stroke="saddlebrown" stroke-dasharray="3,3" stroke-width="1" x1="170.0" x2="170.0" y1="140" y2="230.0"/>
+  <text fill="black" font-size="9px" font-weight="bold" x="152.0" y="185.0">CABINET</text>
+  <rect fill="burlywood" height="300.0" stroke="saddlebrown" stroke-width="3" width="180.0" x="380.0" y="140"/>
+  <line stroke="saddlebrown" stroke-width="2" x1="470.0" x2="470.0" y1="140" y2="440.0"/>
+  <rect fill="gold" height="16" stroke="black" stroke-width="1" width="4" x="450.0" y="282.0"/>
+  <rect fill="gold" height="16" stroke="black" stroke-width="1" width="4" x="486.0" y="282.0"/>
+  <rect fill="saddlebrown" height="8" stroke="black" width="6" x="390.5" y="440.0"/>
+  <rect fill="saddlebrown" height="8" stroke="black" width="6" x="480.5" y="440.0"/>
+  <rect fill="saddlebrown" height="8" stroke="black" width="6" x="453.5" y="440.0"/>
+  <rect fill="saddlebrown" height="8" stroke="black" width="6" x="543.5" y="440.0"/>
+  <text fill="black" font-size="16px" font-weight="bold" x="80" y="115">TOP VIEW</text>
+  <text fill="black" font-size="16px" font-weight="bold" x="380.0" y="115">FRONT VIEW</text>
+  <text fill="red" font-size="14px" font-weight="bold" x="80" y="490.0">Dimensions: 1.20m × 0.60m × 2.00m</text>
+  <line stroke="red" stroke-width="1.5" x1="80" x2="260.0" y1="245.0" y2="245.0"/>
+  <line stroke="red" stroke-width="1.5" x1="80" x2="80" y1="237.0" y2="253.0"/>
+  <line stroke="red" stroke-width="1.5" x1="260.0" x2="260.0" y1="237.0" y2="253.0"/>
+  <text fill="red" font-size="11px" x="155.0" y="263.0">1.20m</text>
+  <line stroke="red" stroke-width="1.5" x1="275.0" x2="275.0" y1="140" y2="230.0"/>
+  <line stroke="red" stroke-width="1.5" x1="267.0" x2="283.0" y1="140" y2="140"/>
+  <line stroke="red" stroke-width="1.5" x1="267.0" x2="283.0" y1="230.0" y2="230.0"/>
+  <text fill="red" font-size="11px" transform="rotate(-90,285.0,185.0)" x="285.0" y="190.0">0.60m</text>
+  <line stroke="red" stroke-width="1.5" x1="380.0" x2="560.0" y1="455.0" y2="455.0"/>
+  <line stroke="red" stroke-width="1.5" x1="380.0" x2="380.0" y1="447.0" y2="463.0"/>
+  <line stroke="red" stroke-width="1.5" x1="560.0" x2="560.0" y1="447.0" y2="463.0"/>
+  <text fill="red" font-size="11px" x="455.0" y="473.0">1.20m</text>
+  <line stroke="red" stroke-width="1.5" x1="575.0" x2="575.0" y1="140" y2="440.0"/>
+  <line stroke="red" stroke-width="1.5" x1="567.0" x2="583.0" y1="140" y2="140"/>
+  <line stroke="red" stroke-width="1.5" x1="567.0" x2="583.0" y1="440.0" y2="440.0"/>
+  <text fill="red" font-size="11px" transform="rotate(-90,585.0,290.0)" x="585.0" y="295.0">2.00m</text>
+</svg>
