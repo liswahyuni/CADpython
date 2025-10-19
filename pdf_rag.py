@@ -233,19 +233,18 @@ class PDFRAGProcessor:
         return ' '.join(words[:max_words])
     
     def search_documents(self, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
-        """Enhanced search with better relevance scoring"""
+        """Search documents with relevance scoring"""
         
         if self.encoder:
-            # Use semantic search with better query processing
-            # Extract key furniture terms for better matching
+            # Use semantic search with furniture term extraction
             furniture_terms = self._extract_furniture_terms(query)
-            enhanced_query = f"{query} {' '.join(furniture_terms)}"
+            expanded_query = f"{query} {' '.join(furniture_terms)}"
             
-            truncated_query = self._truncate_text(enhanced_query)
+            truncated_query = self._truncate_text(expanded_query)
             query_embedding = self.encoder.encode([truncated_query])[0].tolist()
             
             try:
-                # Query ChromaDB with enhanced relevance
+                # Query ChromaDB with relevance scoring
                 results = self.collection.query(
                     query_embeddings=[query_embedding],
                     n_results=min(top_k * 2, 20)  # Get more results for better filtering
@@ -275,10 +274,10 @@ class PDFRAGProcessor:
                 return search_results[:top_k]
                 
             except Exception as e:
-                logging.warning(f"Enhanced ChromaDB search failed: {e}. Falling back to keyword search.")
+                logging.warning(f"ChromaDB search failed: {e}. Falling back to keyword search.")
         
-        # Enhanced fallback keyword search
-        return self._enhanced_keyword_search(query, top_k)
+        # Fallback keyword search
+        return self._keyword_search(query, top_k)
     
     def get_cad_context(self, description: str) -> List[str]:
         """Get relevant CAD context from PDFs"""
@@ -437,8 +436,8 @@ class PDFRAGProcessor:
         return None
     
     def _extract_furniture_terms(self, query: str) -> List[str]:
-        """Extract furniture-related terms with enhanced Indonesian-English translation"""
-        # Enhanced furniture translation dictionary
+        """Extract furniture-related terms with Indonesian-English translation"""
+        # Furniture translation dictionary
         furniture_keywords = {
             # Basic furniture - exact matching
             'kursi': ['chair', 'seat', 'sitting', 'backrest', 'armrest', 'legs', 'dining', 'side'],
@@ -516,8 +515,8 @@ class PDFRAGProcessor:
         
         return (keyword_score * 0.4 + furniture_score * 0.4 + min(dimension_score, 1.0) * 0.2)
     
-    def _enhanced_keyword_search(self, query: str, top_k: int) -> List[Dict[str, Any]]:
-        """Enhanced keyword search with better scoring"""
+    def _keyword_search(self, query: str, top_k: int) -> List[Dict[str, Any]]:
+        """Keyword search with scoring"""
         try:
             all_results = self.collection.get()
             if not all_results['documents']:
@@ -545,12 +544,12 @@ class PDFRAGProcessor:
             return scored_results[:top_k]
             
         except Exception as e:
-            logging.error(f"Enhanced keyword search failed: {e}")
+            logging.error(f"Keyword search failed: {e}")
             return []
     
     def _extract_furniture_standards(self, text: str) -> Dimensions:
         """Extract standard furniture dimensions from context"""
-        # Enhanced patterns for furniture dimension tables (inches converted to meters)
+        # Patterns for furniture dimension tables (inches converted to meters)
         patterns = {
             # Chairs - format: "Dining, Side 19 19 18 36" (width, depth, seat_height, back_height)
             'dining_chair': r'dining,?\s+side\s+(\d+)\s+(\d+)\s+(\d+)(?:\s+(\d+))?',

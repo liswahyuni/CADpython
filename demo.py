@@ -4,7 +4,7 @@ CAD Generator Demo System
 
 Demonstrates the complete CAD generation pipeline:
 - Indonesian text input parsing
-- RAG-enhanced dimension extraction
+- RAG dimension extraction from PDF standards
 - 2D CAD generation (DXF + SVG)
 - 3D model generation (STL + OBJ)
 """
@@ -15,6 +15,7 @@ import traceback
 from pdf_rag import PDFRAGProcessor, Dimensions
 from cad_generator import CADGenerator  
 from extruder_3d import Extruder3D
+from llm_parser import LLMParser
 
 
 class CADDemo:
@@ -35,6 +36,9 @@ class CADDemo:
         self.rag = PDFRAGProcessor()
         print("  RAG processor ready")
         
+        self.llm_parser = LLMParser()
+        print("  LLM parser ready (Llama 3.2:1b)")
+        
         self.cad_generator = CADGenerator()
         print("  2D CAD generator ready")
         
@@ -49,6 +53,11 @@ class CADDemo:
         """
         Parse furniture description and extract metadata.
         
+        Hybrid approach:
+        1. Try LLM parser first (natural language understanding)
+        2. Validate with RAG standards
+        3. Fallback to deterministic regex if needed
+        
         Args:
             description: Indonesian text description
             
@@ -56,6 +65,65 @@ class CADDemo:
             Dictionary with type, dimensions, and features
         """
         print(f"\nParsing: '{description}'")
+        
+        # Step 1: Try LLM parsing first
+        print("  Using LLM (Llama 3.2:1b) for natural language understanding...")
+        
+        # Get RAG context for LLM
+        rag_results = self.rag.search_documents(description, top_k=2)
+        rag_context = "\n".join([r['text'][:200] for r in rag_results]) if rag_results else None
+        
+        llm_result = self.llm_parser.parse_description(description, rag_context)
+        
+        if llm_result and llm_result.confidence > 0.5:
+            print(f"  LLM parsing successful (confidence: {llm_result.confidence:.2f})")
+            print(f"  Type: {llm_result.furniture_type}")
+            print(f"  Implicit requirements: {llm_result.implicit_requirements.get('user_intent', 'N/A')}")
+            
+            # Normalize furniture type to standard categories
+            normalized_type = self._normalize_furniture_type(llm_result.furniture_type)
+            print(f"  Normalized type: {normalized_type}")
+            
+            # Convert LLM result to standard format
+            dimensions = None
+            if llm_result.dimensions:
+                dimensions = Dimensions(
+                    width=llm_result.dimensions.get('width', 1.0),
+                    length=llm_result.dimensions.get('length', 1.0),
+                    height=llm_result.dimensions.get('height', 0.75)
+                )
+            
+            # Merge features: Regex (explicit) takes priority over LLM (inferred)
+            # Regex is deterministic and accurate for explicit text mentions
+            # LLM fills in implicit/missing features only
+            regex_features = self._parse_features(description)
+            llm_features = llm_result.features
+            
+            # Start with LLM features (for implicit inference)
+            features = {}
+            for key, llm_val in llm_features.items():
+                # Skip LLM value if it's a default/zero/None
+                if llm_val not in [0, None, False, '']:
+                    features[key] = llm_val
+            
+            # Override with regex features (explicit text always wins)
+            for key, regex_val in regex_features.items():
+                if regex_val not in [None, False, '']:
+                    features[key] = regex_val
+                    if key in llm_features and llm_features[key] != regex_val:
+                        print(f"  ! Regex override: {key} = {regex_val} (LLM had {llm_features[key]})")
+            
+            return {
+                'type': normalized_type,
+                'dimensions': dimensions,
+                'features': features,
+                'rag_used': True,
+                'llm_used': True,
+                'implicit_requirements': llm_result.implicit_requirements
+            }
+        
+        # Step 2: Fallback to original regex-based parsing
+        print("  LLM confidence low, using regex-based parsing (deterministic)...")
         
         furniture_terms = self.rag._extract_furniture_terms(description)
         print(f"  Translated terms: {furniture_terms[:5]}...")
@@ -78,7 +146,8 @@ class CADDemo:
             'type': furniture_type,
             'dimensions': dimensions,
             'features': features,
-            'rag_enhanced': bool(rag_results)
+            'rag_used': bool(rag_results),
+            'llm_used': False
         }
     
     def _extract_dimensions(self, text: str) -> Dimensions:
@@ -144,6 +213,31 @@ class CADDemo:
                     continue
         
         return None
+    
+    def _normalize_furniture_type(self, furniture_type: str) -> str:
+        """
+        Normalize furniture type to standard English categories.
+        Maps Indonesian or LLM-generated types to CAD generator types.
+        
+        Priority: More specific types first (house > room > cabinet > sofa > table > chair)
+        """
+        type_lower = furniture_type.lower()
+        
+        # Check most specific types first to avoid false matches
+        if any(word in type_lower for word in ['rumah', 'house', 'bangunan']):
+            return 'house'
+        elif any(word in type_lower for word in ['ruangan', 'kamar', 'room', 'bedroom']):
+            return 'room'
+        elif any(word in type_lower for word in ['lemari', 'wardrobe', 'cabinet']):
+            return 'cabinet'
+        elif any(word in type_lower for word in ['sofa', 'couch']):
+            return 'sofa'
+        elif any(word in type_lower for word in ['meja', 'table', 'dining']):
+            return 'table'
+        elif any(word in type_lower for word in ['kursi', 'chair']):
+            return 'chair'
+        
+        return 'furniture'
     
     def _identify_type(self, text: str, terms: list) -> str:
         """Identify furniture type from text and translated terms."""
@@ -288,6 +382,10 @@ class CADDemo:
                 'filename': 'round_dining_table'
             },
             {
+                'description': 'Meja makan untuk 6 orang',
+                'filename': 'dining_table_6_people'
+            },
+            {
                 'description': 'Sofa 3 dudukan dengan sandaran dan lengan, panjang 200 cm lebar 90 cm tinggi 85 cm',
                 'filename': 'three_seat_sofa'
             },
@@ -296,7 +394,7 @@ class CADDemo:
                 'filename': 'wardrobe'
             },
             {
-                'description': 'Rumah modern 10x12 meter dengan garasi, 2 kamar tidur, tinggi 3.5 meter',
+                'description': 'Rumah modern 10x12 meter dengan garasi, 2 kamar tidur, 4 jendela, tinggi 3.5 meter',
                 'filename': 'modern_house'
             }
         ]
@@ -316,7 +414,10 @@ class CADDemo:
                     d = parsed['dimensions']
                     print(f"  Dimensions: {d.width:.2f}m x {d.length:.2f}m x {d.height:.2f}m")
                 print(f"  Features: {parsed['features']}")
-                print(f"  RAG Enhanced: {parsed['rag_enhanced']}")
+                print(f"  RAG Used: {parsed['rag_used']}")
+                print(f"  LLM Used: {parsed.get('llm_used', False)}")
+                if parsed.get('implicit_requirements'):
+                    print(f"  User Intent: {parsed['implicit_requirements'].get('user_intent', 'N/A')}")
                 
                 files = self.generate_cad(parsed, example['filename'])
                 results.append({
@@ -336,7 +437,9 @@ class CADDemo:
         print(f"Output directory: {os.path.abspath(self.output_dir)}")
         print("\nFeatures demonstrated:")
         print("  - Indonesian input → English database search")
-        print("  - RAG-enhanced dimension extraction")
+        print("  - LLM natural language understanding (Llama 3.2:1b)")
+        print("  - RAG dimension extraction from PDF standards")
+        print("  - Deterministic regex validation")
         print("  - 2D CAD generation (DXF + SVG)")
         print("  - 3D model generation (STL + OBJ)")
         

@@ -19,7 +19,7 @@
   <text fill="gray" font-size="7px" font-style="italic" x="325.0" y="225.0">NORTH WALL VIEW</text>
   <text fill="black" font-size="16px" font-weight="bold" x="80" y="115">TOP VIEW</text>
   <text fill="black" font-size="16px" font-weight="bold" x="320.0" y="115">FRONT VIEW</text>
-  <text fill="red" font-size="14px" font-weight="bold" x="80" y="340.0">Dimensions: 4.00m × 5.00m × 3.00m</text>
+  <text fill="red" font-size="14px" font-weight="bold" x="80" y="340.0">Dimensions: 5.00m × 4.00m × 3.00m</text>
   <line stroke="red" stroke-width="1.5" x1="80" x2="200.0" y1="305.0" y2="305.0"/>
   <line stroke="red" stroke-width="1.5" x1="80" x2="80" y1="297.0" y2="313.0"/>
   <line stroke="red" stroke-width="1.5" x1="200.0" x2="200.0" y1="297.0" y2="313.0"/>

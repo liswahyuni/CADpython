@@ -13,10 +13,10 @@
   <text fill="darkred" font-size="8px" x="156.375" y="194.0">BR2</text>
   <rect fill="brown" height="4" stroke="black" stroke-width="1" width="15" x="128.75" y="318.0"/>
   <text fill="brown" font-size="7px" font-weight="bold" x="118.75" y="332.0">ENTRANCE</text>
-  <rect fill="lightblue" height="12" stroke="blue" stroke-width="1" width="4" x="78" y="185.0"/>
-  <rect fill="lightblue" height="12" stroke="blue" stroke-width="1" width="4" x="78" y="257.0"/>
-  <rect fill="lightblue" height="12" stroke="blue" stroke-width="1" width="4" x="190.5" y="185.0"/>
-  <rect fill="lightblue" height="12" stroke="blue" stroke-width="1" width="4" x="190.5" y="257.0"/>
+  <rect fill="lightblue" height="12" stroke="blue" stroke-width="1" width="4" x="78" y="194.0"/>
+  <rect fill="lightblue" height="12" stroke="blue" stroke-width="1" width="4" x="190.5" y="194.0"/>
+  <rect fill="lightblue" height="12" stroke="blue" stroke-width="1" width="4" x="78" y="254.0"/>
+  <rect fill="lightblue" height="12" stroke="blue" stroke-width="1" width="4" x="190.5" y="254.0"/>
   <rect fill="wheat" height="52.5" stroke="darkred" stroke-width="2" width="105.0" x="350.0" y="140"/>
   <polygon fill="darkslategray" points="345.0,140 460.0,140 455.0,130 350.0,130" stroke="black" stroke-width="1"/>
   <rect fill="lightgray" height="34.125" stroke="darkred" stroke-width="2" width="45.0" x="455.0" y="158.375"/>
@@ -29,7 +29,7 @@
   <circle cx="407.0" cy="177.5" fill="gold" r="2" stroke="black"/>
   <text fill="black" font-size="16px" font-weight="bold" x="80" y="115">TOP VIEW</text>
   <text fill="black" font-size="16px" font-weight="bold" x="350.0" y="115">FRONT VIEW</text>
-  <text fill="red" font-size="14px" font-weight="bold" x="80" y="370.0">Dimensions: 10.00m × 12.00m × 3.50m</text>
+  <text fill="red" font-size="14px" font-weight="bold" x="80" y="370.0">Dimensions: 12.00m × 10.00m × 3.50m</text>
   <line stroke="red" stroke-width="1.5" x1="80" x2="230.0" y1="335.0" y2="335.0"/>
   <line stroke="red" stroke-width="1.5" x1="80" x2="80" y1="327.0" y2="343.0"/>
   <line stroke="red" stroke-width="1.5" x1="230.0" x2="230.0" y1="327.0" y2="343.0"/>

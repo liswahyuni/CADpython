@@ -234,77 +234,62 @@ class Extruder3D:
         return trimesh.util.concatenate(meshes)
     
     def _create_sofa_mesh(self, width: float, length: float, height: float, features: dict = None) -> trimesh.Trimesh:
-        """Create realistic sofa mesh with rounded edges and seat separators"""
+        """Create a realistic sofa with backrest, armrests, and seat cushions"""
         if features is None:
             features = {}
+        num_seats = int(features.get('seats', 2) or 2)
         
-        num_seats = features.get('seats', 2)
-        seat_height = height * 0.4
-        back_height = height * 0.6
-        arm_width = width * 0.12  # 12% for armrests (matching 2D)
-        backrest_depth = 0.2  # 20% backrest depth (matching 2D)
-        cushion_thickness = 0.1
+        # Sofa orientation: length horizontal, width depth
+        sofa_width = length
+        sofa_depth = width
+        
+        # Sofa proportions (realistic)
+        seat_height = height * 0.45
+        backrest_height = height * 0.55
+        armrest_height = height * 0.45
+        backrest_thickness = sofa_depth * 0.2
+        armrest_width = sofa_width * 0.12
         
         meshes = []
         
-        # Seat area (between armrests) - matching 2D exactly
-        seat_area_width = width - 2*arm_width
-        seat_depth = length * (1 - backrest_depth)  # Seat depth without backrest area
+        # Base/Seat (wide, low platform)
+        seat_mesh = self._create_rounded_box([sofa_width, sofa_depth, seat_height])
+        seat_mesh.apply_translation([0, 0, seat_height/2])
+        meshes.append(seat_mesh)
         
-        # Base/frame ONLY in seat area (not full width) to match 2D
-        base = self._create_rounded_box([seat_area_width, seat_depth, seat_height], radius=0.05)
-        base.apply_translation([0, -length * backrest_depth / 2, seat_height/2])
-        meshes.append(base)
+        # Backrest (thin wall at back)
+        backrest_mesh = self._create_rounded_box([sofa_width, backrest_thickness, backrest_height])
+        backrest_mesh.apply_translation([0, -sofa_depth/2 + backrest_thickness/2, seat_height + backrest_height/2])
+        meshes.append(backrest_mesh)
         
-        seat_width_per_cushion = seat_area_width / num_seats
+        # Left armrest
+        left_armrest = self._create_rounded_box([armrest_width, sofa_depth - backrest_thickness, armrest_height])
+        left_armrest.apply_translation([-sofa_width/2 + armrest_width/2, backrest_thickness/2, seat_height + armrest_height/2])
+        meshes.append(left_armrest)
         
-        # Individual seat cushions with small gaps and rounded edges
-        gap_width = 0.02  # 2cm gap between cushions
-        cushion_width = seat_width_per_cushion - gap_width
+        # Right armrest
+        right_armrest = self._create_rounded_box([armrest_width, sofa_depth - backrest_thickness, armrest_height])
+        right_armrest.apply_translation([sofa_width/2 - armrest_width/2, backrest_thickness/2, seat_height + armrest_height/2])
+        meshes.append(right_armrest)
+        
+        # Seat cushions (individual cushions between armrests)
+        cushion_width = (sofa_width - 2 * armrest_width) / num_seats
+        cushion_depth = sofa_depth - backrest_thickness
+        cushion_height = seat_height * 0.15
         
         for i in range(num_seats):
-            # Calculate position for each cushion
-            offset_from_center = (i - (num_seats - 1) / 2) * seat_width_per_cushion
-            cushion_x = offset_from_center
-            
-            # Create rounded cushion - positioned in seat area only
-            cushion = self._create_rounded_box([cushion_width, seat_depth - 0.1, cushion_thickness], radius=0.04)
-            cushion.apply_translation([cushion_x, -length * backrest_depth / 2, seat_height + cushion_thickness/2])
-            meshes.append(cushion)
-        
-        # Backrest - positioned DIRECTLY on top of seat base (not floating)
-        # Backrest sits on the seat base and extends upward
-        backrest_thickness = 0.15  # Slightly thicker for stability
-        back = self._create_rounded_box([seat_area_width, backrest_thickness, back_height], radius=0.03)
-        # Position: starts at seat_height (bottom of backrest), centered at back of sofa
-        back.apply_translation([0, length/2 - backrest_thickness/2, seat_height + back_height/2])
-        meshes.append(back)
-        
-        # Armrests (left and right, rounded) - positioned at seat depth only, matching 2D
-        arm_height = height * 0.8
-        left_arm = self._create_rounded_box([arm_width, seat_depth, arm_height], radius=0.03)
-        left_arm.apply_translation([-width/2 + arm_width/2, -length * backrest_depth / 2, arm_height/2])
-        meshes.append(left_arm)
-        
-        right_arm = self._create_rounded_box([arm_width, seat_depth, arm_height], radius=0.03)
-        right_arm.apply_translation([width/2 - arm_width/2, -length * backrest_depth / 2, arm_height/2])
-        meshes.append(right_arm)
+            cushion_x = -sofa_width/2 + armrest_width + cushion_width/2 + i * cushion_width
+            cushion_mesh = self._create_rounded_box([cushion_width * 0.95, cushion_depth * 0.95, cushion_height])
+            cushion_mesh.apply_translation([cushion_x, backrest_thickness/2, seat_height + cushion_height/2])
+            meshes.append(cushion_mesh)
         
         return trimesh.util.concatenate(meshes)
     
-    def _create_rounded_box(self, extents, radius=0.05):
-        """Create a box with rounded edges using sphere-swept method"""
-        # Create basic box
+    def _create_rounded_box(self, extents, radius=0.01):
+        """Create box with subtle rounded edges"""
         box = trimesh.creation.box(extents=extents)
-        
-        # Apply moderate subdivision for subtle rounded appearance (matching 2D rx=8, ry=8)
-        # Only 1 subdivision to keep edges visible and not too smooth/oval
         subdivided = box.subdivide()
-        
-        # Apply gentle Laplacian smoothing - less iterations for more realistic corners
-        # This creates subtle rounding similar to 2D rx=8, not oval shapes
-        smoothed = trimesh.smoothing.filter_laplacian(subdivided, iterations=3, lamb=0.5)
-        
+        smoothed = trimesh.smoothing.filter_laplacian(subdivided, iterations=1, lamb=0.2)
         return smoothed
     
     def _create_circular_mesh(self, width: float, length: float, height: float, diameter: float = None) -> trimesh.Trimesh:
@@ -522,53 +507,35 @@ class Extruder3D:
         door.apply_translation([door_x_offset, -length/2 - wall_thickness/2, -height/2 + door_height/2])
         meshes.append(door)
         
-        return trimesh.util.concatenate(meshes)
-    
-    def _add_chair_features(self, mesh: trimesh.Trimesh, parsed_obj: ParsedObject) -> trimesh.Trimesh:
-        """Add chair-specific features"""
-        # Add legs as cylinders
-        leg_radius = 0.02
-        leg_height = parsed_obj.dimensions.height * 0.4
+        # Windows on side walls (distributed evenly on left and right walls)
+        num_windows = int(features.get('windows', 4) or 4)  # Default 4 if not specified
+        windows_per_side = num_windows // 2
         
-        width = parsed_obj.dimensions.width
-        length = parsed_obj.dimensions.length
-        
-        leg_positions = [
-            (-width/2 + 0.05, -length/2 + 0.05),
-            (width/2 - 0.05, -length/2 + 0.05),
-            (width/2 - 0.05, length/2 - 0.05),
-            (-width/2 + 0.05, length/2 - 0.05)
-        ]
-        
-        meshes = [mesh]
-        for x, y in leg_positions:
-            leg = trimesh.creation.cylinder(radius=leg_radius, height=leg_height)
-            leg.apply_translation([x, y, -parsed_obj.dimensions.height/2 + leg_height/2])
-            meshes.append(leg)
-        
-        return trimesh.util.concatenate(meshes)
-    
-    def _add_table_features(self, mesh: trimesh.Trimesh, parsed_obj: ParsedObject) -> trimesh.Trimesh:
-        """Add table-specific features"""
-        # Add legs as cylinders
-        leg_radius = 0.03
-        leg_height = parsed_obj.dimensions.height
-        
-        width = parsed_obj.dimensions.width
-        length = parsed_obj.dimensions.length
-        
-        leg_positions = [
-            (-width/2 + 0.1, -length/2 + 0.1),
-            (width/2 - 0.1, -length/2 + 0.1),
-            (width/2 - 0.1, length/2 - 0.1),
-            (-width/2 + 0.1, length/2 - 0.1)
-        ]
-        
-        meshes = [mesh]
-        for x, y in leg_positions:
-            leg = trimesh.creation.cylinder(radius=leg_radius, height=leg_height)
-            leg.apply_translation([x, y, -parsed_obj.dimensions.height/2 + leg_height/2])
-            meshes.append(leg)
+        if windows_per_side > 0:
+            window_width = 1.2
+            window_height = 1.5
+            window_thickness = 0.05
+            window_z = height * 0.15
+            window_spacing = length / (windows_per_side + 1)
+            
+            for i in range(windows_per_side):
+                window_y = -length/2 + window_spacing * (i + 1)
+                
+                # Left wall windows
+                left_window = trimesh.creation.box(extents=[window_thickness, window_width, window_height])
+                left_x = -main_width/2 - wall_thickness/2
+                if has_garage:
+                    left_x -= (width - main_width)/2
+                left_window.apply_translation([left_x, window_y, window_z])
+                meshes.append(left_window)
+                
+                # Right wall windows
+                right_window = trimesh.creation.box(extents=[window_thickness, window_width, window_height])
+                right_x = main_width/2 + wall_thickness/2
+                if has_garage:
+                    right_x -= (width - main_width)/2
+                right_window.apply_translation([right_x, window_y, window_z])
+                meshes.append(right_window)
         
         return trimesh.util.concatenate(meshes)
     

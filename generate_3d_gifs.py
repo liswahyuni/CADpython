@@ -69,10 +69,11 @@ def main():
     # List of objects to render
     objects = [
         ("chair_demo", "Chair (4 legs)"),
+        ("room_demo", "Room (door & window)"),
         ("round_dining_table", "Round Dining Table"),
+        ("dining_table_6_people", "Dining Table (6 people)"),
         ("three_seat_sofa", "Three-Seat Sofa"),
         ("wardrobe", "Wardrobe (2 doors)"),
-        ("room_demo", "Room (door & window)"),
         ("modern_house", "Modern House (with garage)")
     ]
     

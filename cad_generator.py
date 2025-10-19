@@ -494,63 +494,6 @@ class CADGenerator:
                            insert=(offset_x - 40, offset_y + parsed_obj.dimensions.length * self.scale / 2),
                            font_size="12px", text_anchor="middle", fill="#00FF00", font_weight="bold"))
 
-    def generate_freecad_script(self, parsed_obj: ParsedObject, filename: str) -> None:
-        """Generate FreeCAD Python script"""
-        script_content = f'''# FreeCAD script for {parsed_obj.object_type}
-import FreeCAD as App
-import Part
-
-doc = App.newDocument("{parsed_obj.object_type}")
-
-# Main object
-width = {parsed_obj.dimensions.width}
-length = {parsed_obj.dimensions.length}
-height = {parsed_obj.dimensions.height}
-
-box = doc.addObject("Part::Box", "{parsed_obj.object_type.title()}")
-box.Width = width * 1000  # Convert to mm
-box.Length = length * 1000
-box.Height = height * 1000
-
-doc.recompute()
-App.ActiveDocument = doc
-'''
-        
-        with open(filename, 'w') as f:
-            f.write(script_content)
-
-    def generate_blender_script(self, parsed_obj: ParsedObject, filename: str) -> None:
-        """Generate Blender Python script"""
-        script_content = f'''# Blender script for {parsed_obj.object_type}
-import bpy
-import bmesh
-
-# Clear existing mesh objects
-bpy.ops.object.select_all(action='SELECT')
-bpy.ops.object.delete(use_global=False)
-
-# Create cube
-bpy.ops.mesh.primitive_cube_add(
-    size=1,
-    location=(0, 0, {parsed_obj.dimensions.height/2})
-)
-
-# Scale to dimensions
-cube = bpy.context.active_object
-cube.scale = ({parsed_obj.dimensions.width}, {parsed_obj.dimensions.length}, {parsed_obj.dimensions.height})
-cube.name = "{parsed_obj.object_type.title()}"
-
-# Apply material
-material = bpy.data.materials.new(name="{parsed_obj.object_type}_Material")
-material.use_nodes = True
-cube.data.materials.append(material)
-
-bpy.ops.object.mode_set(mode='OBJECT')
-'''
-        
-        with open(filename, 'w') as f:
-            f.write(script_content)
-
     def create_2d_views(self, parsed_data: dict, dxf_output: str, svg_output: str):
         """Create 2D views (top and front) for furniture or rooms"""
         furniture_type = parsed_data['type']
@@ -716,13 +659,15 @@ bpy.ops.object.mode_set(mode='OBJECT')
         ], dxfattribs={'layer': 'TOP_VIEW'})
         
         # Door (gap in west wall)
-        if features.get('doors', 0) > 0:
+        num_doors = features.get('doors', 0) or 0
+        if num_doors > 0:
             door_width = 80
             door_y = offset_y + length/2 - door_width/2
             msp.add_line((offset_x, door_y), (offset_x, door_y + door_width), dxfattribs={'layer': 'FRONT_VIEW', 'color': 4})
         
         # Window (mark on north wall)
-        if features.get('windows', 0) > 0:
+        num_windows = features.get('windows', 0) or 0
+        if num_windows > 0:
             window_width = 120
             window_x = offset_x + width/2 - window_width/2
             msp.add_line((window_x, offset_y + length), (window_x + window_width, offset_y + length), dxfattribs={'layer': 'FRONT_VIEW', 'color': 5})
@@ -739,7 +684,8 @@ bpy.ops.object.mode_set(mode='OBJECT')
         ], dxfattribs={'layer': 'FRONT_VIEW'})
         
         # Window
-        if features.get('windows', 0) > 0:
+        num_windows = features.get('windows', 0) or 0
+        if num_windows > 0:
             window_width, window_height = 120, 100
             window_x = offset_x + width/2 - window_width/2
             window_y = offset_y + height/2 - window_height/2
@@ -768,6 +714,12 @@ bpy.ops.object.mode_set(mode='OBJECT')
             top_view_width = dimensions.length * scale
             top_view_height = dimensions.width * scale
             front_view_width = dimensions.width * scale
+            front_view_height = dimensions.height * scale
+        elif furniture_type == 'sofa':
+            # Sofa: length (2.0m) is horizontal width, width (0.9m) is depth
+            top_view_width = dimensions.length * scale
+            top_view_height = dimensions.width * scale
+            front_view_width = dimensions.length * scale
             front_view_height = dimensions.height * scale
         else:
             top_view_width = dimensions.width * scale
@@ -803,21 +755,30 @@ bpy.ops.object.mode_set(mode='OBJECT')
         dwg.add(dwg.text('FRONT VIEW', insert=(front_x, margin + 35), 
                         fill='black', font_size='16px', font_weight='bold'))
         
-        # Add dimensions text
+        # Dimensions text: L × W × H format
         dim_y = top_y + max(top_view_height, front_view_height) + 50
-        dwg.add(dwg.text(f'Dimensions: {dimensions.width:.2f}m × {dimensions.length:.2f}m × {dimensions.height:.2f}m', 
-                        insert=(margin, dim_y), fill='red', font_size='14px', font_weight='bold'))
+        
+        if dimensions.length >= dimensions.width:
+            length_val, width_val = dimensions.length, dimensions.width
+        else:
+            length_val, width_val = dimensions.width, dimensions.length
+        
+        dim_text = f'Dimensions: {length_val:.2f}m × {width_val:.2f}m × {dimensions.height:.2f}m'
+        dwg.add(dwg.text(dim_text, insert=(margin, dim_y), fill='red', font_size='14px', font_weight='bold'))
         
         # Add dimension lines for both views
         if furniture_type == 'chair':
-            # Top view: length x width
             self._add_dimension_lines_svg(dwg, top_x, top_y, top_view_width, top_view_height, 
                                         dimensions.length, dimensions.width, scale)
-            # Front view: width x height  
             self._add_dimension_lines_svg(dwg, front_x, front_y, front_view_width, front_view_height,
                                         dimensions.width, dimensions.height, scale)
+        elif furniture_type == 'sofa':
+            # Sofa: length is horizontal, width is depth
+            self._add_dimension_lines_svg(dwg, top_x, top_y, top_view_width, top_view_height, 
+                                        dimensions.length, dimensions.width, scale)
+            self._add_dimension_lines_svg(dwg, front_x, front_y, front_view_width, front_view_height,
+                                        dimensions.length, dimensions.height, scale)
         else:
-            # Standard: width x length for top, width x height for front
             self._add_dimension_lines_svg(dwg, top_x, top_y, top_view_width, top_view_height, 
                                         dimensions.width, dimensions.length, scale)
             self._add_dimension_lines_svg(dwg, front_x, front_y, front_view_width, front_view_height,
@@ -919,7 +880,7 @@ bpy.ops.object.mode_set(mode='OBJECT')
                     dwg.add(dwg.text('Ø', insert=(center_x - 5, center_y + 5), 
                                    fill='black', font_size='20px', font_weight='bold'))
                     
-                    num_legs = features.get('legs', 4)
+                    num_legs = int(features.get('legs', 4) or 4)
                     leg_radius = radius * 0.7
                     edge_distance = radius - leg_radius
                     for i in range(num_legs):
@@ -948,7 +909,7 @@ bpy.ops.object.mode_set(mode='OBJECT')
                                fill='lightgreen', stroke='green', stroke_width=2))
                 
                 # Legs
-                num_legs = features.get('legs', 4)
+                num_legs = int(features.get('legs', 4) or 4)
                 # For 4-leg table, show 2 legs at sides
                 margin = 10
                 leg_positions = [margin, width - margin]
@@ -964,7 +925,8 @@ bpy.ops.object.mode_set(mode='OBJECT')
                 dwg.add(dwg.rect((x, y), (width, length), fill='lightyellow', stroke='black', stroke_width=3))
                 
                 # Door symbol (gap + door swing)
-                if features.get('doors', 0) > 0:
+                num_doors = features.get('doors', 0) or 0
+                if num_doors > 0:
                     door_width = 30  # 80cm door scaled
                     door_y = y + length/2 - door_width/2
                     
@@ -980,7 +942,8 @@ bpy.ops.object.mode_set(mode='OBJECT')
                     dwg.add(dwg.text('PINTU', insert=(x - 40, door_y + door_width/2), fill='red', font_size='10px', font_weight='bold'))
                 
                 # Window symbol
-                if features.get('windows', 0) > 0:
+                num_windows = features.get('windows', 0) or 0
+                if num_windows > 0:
                     window_width = 40  # 120cm window scaled
                     window_x = x + width/2 - window_width/2
                     
@@ -999,7 +962,8 @@ bpy.ops.object.mode_set(mode='OBJECT')
                 dwg.add(dwg.rect((x, y), (width, height), fill='lightyellow', stroke='black', stroke_width=3))
                 
                 # Window in front view (north wall - matches top view)
-                if features.get('windows', 0) > 0:
+                num_windows = features.get('windows', 0) or 0
+                if num_windows > 0:
                     window_width, window_height = 40, 30
                     window_x = x + width/2 - window_width/2  # Center of north wall
                     window_y = y + height/2 - window_height/2  # Middle height
@@ -1025,7 +989,7 @@ bpy.ops.object.mode_set(mode='OBJECT')
         elif furniture_type == 'house':
             has_garage = features.get('has_garage', False)
             is_modern = features.get('style') == 'modern'
-            num_bedrooms = features.get('bedrooms', 2)
+            num_bedrooms = int(features.get('bedrooms', 2) or 2)
             
             if view == 'top':
                 width, length = dimensions.width * scale, dimensions.length * scale
@@ -1074,20 +1038,26 @@ bpy.ops.object.mode_set(mode='OBJECT')
                 dwg.add(dwg.text('ENTRANCE', insert=(door_x - 10, y + length + 12), 
                                fill='brown', font_size='7px', font_weight='bold'))
                 
-                # Windows in top view (2 windows on LEFT wall, 2 on RIGHT wall - visible from above)
-                window_size = 12
-                # Left wall windows (west side)
-                dwg.add(dwg.rect((x - 2, y + length * 0.25), (4, window_size), 
-                               fill='lightblue', stroke='blue', stroke_width=1))
-                dwg.add(dwg.rect((x - 2, y + length * 0.65), (4, window_size), 
-                               fill='lightblue', stroke='blue', stroke_width=1))
-                # Right wall windows (east side)
-                dwg.add(dwg.rect((x + main_width - 2, y + length * 0.25), (4, window_size), 
-                               fill='lightblue', stroke='blue', stroke_width=1))
-                dwg.add(dwg.rect((x + main_width - 2, y + length * 0.65), (4, window_size), 
-                               fill='lightblue', stroke='blue', stroke_width=1))
+                # Windows in top view (distributed on left and right walls)
+                num_windows = int(features.get('windows', 4) or 4)  # Default 4 if not specified
+                windows_per_side = num_windows // 2
                 
-            else:  # front view - SOUTH wall (entrance side, no windows since windows are on EAST/WEST walls)
+                if windows_per_side > 0:
+                    window_size = 12
+                    window_spacing = length / (windows_per_side + 1)
+                    
+                    for i in range(windows_per_side):
+                        window_y = y + window_spacing * (i + 1)
+                        
+                        # Left wall windows (west side)
+                        dwg.add(dwg.rect((x - 2, window_y - window_size/2), (4, window_size), 
+                                       fill='lightblue', stroke='blue', stroke_width=1))
+                        
+                        # Right wall windows (east side)
+                        dwg.add(dwg.rect((x + main_width - 2, window_y - window_size/2), (4, window_size), 
+                                       fill='lightblue', stroke='blue', stroke_width=1))
+                
+            else:  # front view
                 width, height = dimensions.width * scale, dimensions.height * scale
                 
                 # Main house body
@@ -1135,17 +1105,13 @@ bpy.ops.object.mode_set(mode='OBJECT')
                                fill='gold', stroke='black'))
         
         elif furniture_type == 'sofa':
-            # Realistic sofa with armrests, backrest, and seat cushions
             if view == 'top':
-                width, length = dimensions.width * scale, dimensions.length * scale
+                width, length = dimensions.length * scale, dimensions.width * scale
                 
-                # Proportions matching front view
                 armrest_width = width * 0.12
                 seat_width = width - (2 * armrest_width)
                 backrest_depth = length * 0.2
                 seat_depth = length - backrest_depth
-                
-                # Rounded corner radius - matching 3D geometry (0.03m radius = subtle rounding)
                 corner_radius = 3
                 
                 # Backrest (thin rectangle at back with rounded top corners)
@@ -1159,7 +1125,7 @@ bpy.ops.object.mode_set(mode='OBJECT')
                                rx=corner_radius, ry=corner_radius))
                 
                 # Seat cushions (rounded cushions for comfort look)
-                num_seats = features.get('seats', 2)
+                num_seats = int(features.get('seats', 2) or 2)
                 cushion_width = seat_width / num_seats
                 for i in range(num_seats):
                     cushion_x = x + armrest_width + (i * cushion_width) + 2
@@ -1179,7 +1145,8 @@ bpy.ops.object.mode_set(mode='OBJECT')
                                fill='black', font_size='10px', font_weight='bold'))
                     
             else:  # front view
-                width, height = dimensions.width * scale, dimensions.height * scale
+                # Front view: use length (2.0m) as horizontal width
+                width, height = dimensions.length * scale, dimensions.height * scale
                 
                 # Sofa proportions matching top view
                 armrest_width_ratio = 0.12
@@ -1232,7 +1199,7 @@ bpy.ops.object.mode_set(mode='OBJECT')
                                fill='burlywood', stroke='saddlebrown', stroke_width=2))
                 
                 # Door divisions
-                num_doors = features.get('doors', 2)
+                num_doors = int(features.get('doors', 2) or 2)
                 door_width = width / num_doors
                 for i in range(1, num_doors):
                     door_x = x + (i * door_width)
@@ -1253,7 +1220,7 @@ bpy.ops.object.mode_set(mode='OBJECT')
                                fill='burlywood', stroke='saddlebrown', stroke_width=3))
                 
                 # Door divisions
-                num_doors = features.get('doors', 2)
+                num_doors = int(features.get('doors', 2) or 2)
                 door_width = width / num_doors
                 for i in range(1, num_doors):
                     door_x = x + (i * door_width)

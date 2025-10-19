@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink" baseProfile="tiny" height="624.5px" version="1.2" width="666.0px">
+  <defs/>
+  <rect fill="white" height="624.5" stroke="black" width="666.0" x="0" y="0"/>
+  <rect fill="lightgreen" height="244.5" stroke="green" stroke-width="2" width="153.0" x="80" y="140"/>
+  <circle cx="90" cy="150" fill="brown" r="4" stroke="black"/>
+  <circle cx="223.0" cy="150" fill="brown" r="4" stroke="black"/>
+  <circle cx="223.0" cy="374.5" fill="brown" r="4" stroke="black"/>
+  <circle cx="90" cy="374.5" fill="brown" r="4" stroke="black"/>
+  <rect fill="lightgreen" height="8" stroke="green" stroke-width="2" width="153.0" x="353.0" y="140"/>
+  <line stroke="brown" stroke-width="4" x1="363.0" x2="363.0" y1="148" y2="251.0"/>
+  <line stroke="brown" stroke-width="4" x1="496.0" x2="496.0" y1="148" y2="251.0"/>
+  <text fill="black" font-size="16px" font-weight="bold" x="80" y="115">TOP VIEW</text>
+  <text fill="black" font-size="16px" font-weight="bold" x="353.0" y="115">FRONT VIEW</text>
+  <text fill="red" font-size="14px" font-weight="bold" x="80" y="434.5">Dimensions: 1.63m × 1.02m × 0.74m</text>
+  <line stroke="red" stroke-width="1.5" x1="80" x2="233.0" y1="399.5" y2="399.5"/>
+  <line stroke="red" stroke-width="1.5" x1="80" x2="80" y1="391.5" y2="407.5"/>
+  <line stroke="red" stroke-width="1.5" x1="233.0" x2="233.0" y1="391.5" y2="407.5"/>
+  <text fill="red" font-size="11px" x="141.5" y="417.5">1.02m</text>
+  <line stroke="red" stroke-width="1.5" x1="248.0" x2="248.0" y1="140" y2="384.5"/>
+  <line stroke="red" stroke-width="1.5" x1="240.0" x2="256.0" y1="140" y2="140"/>
+  <line stroke="red" stroke-width="1.5" x1="240.0" x2="256.0" y1="384.5" y2="384.5"/>
+  <text fill="red" font-size="11px" transform="rotate(-90,258.0,262.25)" x="258.0" y="267.25">1.63m</text>
+  <line stroke="red" stroke-width="1.5" x1="353.0" x2="506.0" y1="266.0" y2="266.0"/>
+  <line stroke="red" stroke-width="1.5" x1="353.0" x2="353.0" y1="258.0" y2="274.0"/>
+  <line stroke="red" stroke-width="1.5" x1="506.0" x2="506.0" y1="258.0" y2="274.0"/>
+  <text fill="red" font-size="11px" x="414.5" y="284.0">1.02m</text>
+  <line stroke="red" stroke-width="1.5" x1="521.0" x2="521.0" y1="140" y2="251.0"/>
+  <line stroke="red" stroke-width="1.5" x1="513.0" x2="529.0" y1="140" y2="140"/>
+  <line stroke="red" stroke-width="1.5" x1="513.0" x2="529.0" y1="251.0" y2="251.0"/>
+  <text fill="red" font-size="11px" transform="rotate(-90,531.0,195.5)" x="531.0" y="200.5">0.74m</text>
+</svg>
