@@ -16,19 +16,22 @@ Automated CAD file generation from Indonesian natural language using hybrid LLM 
 ## Quick Start
 
 ```bash
-# 1. Install Ollama + Llama 3.2:1b
+# 1. Install uv (fast Python package manager)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# 2. Install Ollama + Llama 3.2:1b
 curl -fsSL https://ollama.com/install.sh | sh
 ollama pull llama3.2:1b
 
-# 2. Clone and install dependencies
+# 3. Clone and install dependencies
 git clone https://github.com/liswahyuni/CADpython.git
 cd CADpython
 uv sync
 
-# 3. Run demo (generates 35 files: 7 objects × 5 formats)
+# 4. Run demo (generates 35 files: 7 objects × 5 formats)
 uv run demo.py
 
-# 4. Generate 3D preview GIFs (optional - converts STL to rotating GIF animations)
+# 5. Generate 3D preview GIFs (optional - converts STL to rotating GIF animations)
 uv run generate_3d_gifs.py
 ```
 
